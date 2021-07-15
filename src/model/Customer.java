@@ -8,7 +8,7 @@ public class Customer {
     private String email;
 private static boolean isValidEmail(String email) {
     String emailtoMatch = email.toLowerCase();
-    if (emailtoMatch.matches("\\w+@\\w+\\.com")) {
+    if (emailtoMatch.matches("\\S+@\\S+\\.com")) {
         return true;
     } else {
         return false;
@@ -21,5 +21,23 @@ private static boolean isValidEmail(String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    @Override
+    public String toString() {
+    return "First Name: " + firstName + " Last Name: " + lastName +
+            "Email: " + email;
     }
 }

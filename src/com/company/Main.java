@@ -1,8 +1,14 @@
 package com.company;
 
+import model.Customer;
+
 public class Main {
 
     public static void main(String[] args) {
-	// write your code here
+	    Customer customer = new Customer("Andreas", "Huebner",
+                "andreas.huebnerh@gmail.com");
+	    System.out.println(customer);
+
+
     }
 }
