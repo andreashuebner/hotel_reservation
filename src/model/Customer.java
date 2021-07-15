@@ -3,9 +3,9 @@ package model;
 import java.util.Locale;
 
 public class Customer {
-    String firstName;
-    String lastName;
-    String email;
+    private String firstName;
+    private String lastName;
+    private String email;
 private static boolean isValidEmail(String email) {
     String emailtoMatch = email.toLowerCase();
     if (emailtoMatch.matches("\\w+@\\w+\\.com")) {

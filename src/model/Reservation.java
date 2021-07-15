@@ -4,10 +4,10 @@ import java.util.Date;
 
 public class Reservation {
 
-    Customer customer;
-    IRoom iRoom;
-    Date checkInDate;
-    Date checkOutDate;
+    private Customer customer;
+    private IRoom iRoom;
+    private Date checkInDate;
+    private Date checkOutDate;
 
     public Reservation(Customer customer, IRoom iRoom, Date checkInDate, Date checkOutDate) {
         this.customer = customer;

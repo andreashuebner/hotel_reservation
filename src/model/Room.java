@@ -1,9 +1,9 @@
 package model;
 
 public class Room  implements IRoom{
-    String roomNumber;
-    Double price;
-    RoomType roomType;
+    protected String roomNumber;
+    protected Double price;
+    protected RoomType roomType;
     boolean isFree;
 
     public Room(String roomNumber, Double price, RoomType roomType, boolean isFree) {
