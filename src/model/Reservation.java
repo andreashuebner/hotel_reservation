@@ -21,4 +21,20 @@ public class Reservation {
         return "Customer: " + customer + " Room Type: " + iRoom + " Check in: "
                 + checkInDate + " Check out: " + checkOutDate;
     }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public IRoom getiRoom() {
+        return iRoom;
+    }
+
+    public Date getCheckInDate() {
+        return checkInDate;
+    }
+
+    public Date getCheckOutDate() {
+        return checkOutDate;
+    }
 }
