@@ -5,6 +5,7 @@ import model.IRoom;
 import model.Reservation;
 import model.Room;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Vector;
 
@@ -37,6 +38,10 @@ public class ReservationService {
         // at the requested dates. If not, throw an exception
         for (Reservation reservation : reservations) {
             // First check if checkin Date conflicts with any reservation
+            // Usually the first condition (comparison on room number)
+            // will be false and the conditions on dates wont be checked anymore
+            // so this loop will be comparably fast despite iterating through
+            // all rooms
             if (reservation.getiRoom().getRoomNumber() == room.getRoomNumber() &&
                     isWithinRange(checkInDate, reservation.getCheckInDate(),
                             reservation.getCheckOutDate())) {
@@ -58,6 +63,40 @@ public class ReservationService {
         reservations.add(reservation);
         return reservation;
     }
+
+    public Collection<IRoom> findRooms(Date checkInDate, Date checkOutDate) {
+        // Iterate through list of rooms and returns the ones
+        // with reservation data not conflicting with provided
+        // check in and check out dates
+        Vector<IRoom> rooms = new Vector<>();
+        for (Reservation reservation: reservations) {
+            IRoom room = reservation.getiRoom();
+            // Check if room is free for provided dates
+            if (!isWithinRange(checkOutDate, reservation.getCheckInDate(),
+                    reservation.getCheckOutDate())) {
+                rooms.add(room);
+            }
+            }
+        return rooms;
+        }
+
+        public Collection<Reservation> getCustomersReservation(Customer customer) {
+            Vector<Reservation> customerReservations = new Vector<>();
+            for (Reservation reservation: reservations) {
+                if (reservation.getCustomer().equals(customer)) {
+                    customerReservations.add(reservation);
+                }
+            }
+            return customerReservations;
+        }
+
+        public void printAllReservations() {
+        for (Reservation reservation: reservations) {
+            System.out.println(reservation);
+        }
+        }
+
+
 
     public void addRoom(IRoom roomToAdd) throws RoomExistsException {
         // If room already exists, throw exception
