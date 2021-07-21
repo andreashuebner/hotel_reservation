@@ -1,5 +1,10 @@
 package com.company;
 
+import model.IRoom;
+import model.RoomType;
+import service.CustomerService;
+import service.ReservationService;
+
 import java.util.Scanner;
 
 public class AdminMenu {
@@ -22,6 +27,26 @@ public class AdminMenu {
         System.out.println("5. Back to Main Menu");
         waitForInput();
     }
+
+    private IRoom getRoomInformation() throws InvalidRoomPriceException {
+        String roomNumber = "";
+        Double price = 0.0;
+        RoomType roomType = RoomType.SINGLE;
+        boolean isFree = true;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please enter the room number");
+        roomNumber = scanner.nextLine();
+        System.out.println("Please enter the price");
+        String priceText = scanner.nextLine();
+        try {
+            price = Double.parseDouble(priceText);
+        } catch(Exception ex) {
+            throw new InvalidRoomPriceException("Room price needs to be a number greater than 0");
+        }
+        if (price <= 0.0) {
+            throw new InvalidRoomPriceException("Room price needs to be a number greater than 0");
+        }
+    }
     private void waitForInput() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Please enter you choice as a number from 1 - 5");
@@ -37,21 +62,26 @@ public class AdminMenu {
             System.out.println("Invalid choice");
             showMenu();
         }
-        if (choiceNumeric == 1) {
-            System.out.println("See all Customers");
+        CustomerService customerService = CustomerService.getInstance();
+        ReservationService reservationService = ReservationService.getInstance();
+        switch (choiceNumeric) {
+            case 1:
+                customerService.printAllCustomers();
+                showMenu();
+            case 2:
+                reservationService.printAllRooms();
+                showMenu();
+            case 3:
+                reservationService.printAllReservations();
+                showMenu();
+            case 4:
+
+                break;
+            case 5:
+               MainMenu mainMenu = MainMenu.getInstance();
+               mainMenu.showMenu();
         }
-        if (choiceNumeric == 2) {
-            System.out.println("See all Rooms");
-        }
-        if (choiceNumeric == 3) {
-            System.out.println("See all Reservations");
-        }
-        if (choiceNumeric == 4) {
-            System.out.println("Add a Room");
-        }
-        if (choiceNumeric == 5) {
-            System.out.println("Back to Main Menu");
-        }
+
 
     }
 

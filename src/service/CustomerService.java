@@ -29,6 +29,11 @@ public class CustomerService {
     public Collection<Customer> getAllCustomers() {
         return allCustomers;
     }
+    public void printAllCustomers() {
+        for (Customer customer: allCustomers) {
+            System.out.println(customer);
+        }
+    }
 
     public static CustomerService getInstance() {
         if (customerService == null) {

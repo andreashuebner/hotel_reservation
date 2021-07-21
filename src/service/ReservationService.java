@@ -120,6 +120,11 @@ public class ReservationService {
     public Collection<IRoom> getAllRooms() {
         return rooms;
     }
+    public void printAllRooms() {
+        for (IRoom room: rooms) {
+            System.out.println(room);
+        }
+    }
 
 }
 

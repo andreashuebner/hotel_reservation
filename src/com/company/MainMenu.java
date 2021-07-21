@@ -37,21 +37,24 @@ public class MainMenu {
             System.out.println("Invalid choice");
             showMenu();
         }
-        if (choiceNumeric == 1) {
-            System.out.println("Find and reserve a room");
+        switch (choiceNumeric) {
+            case 1:
+                System.out.println("Find and reserve a room");
+                break;
+            case 2:
+                System.out.println("See my reservations");
+                break;
+            case 3:
+                System.out.println("Create an account");
+                break;
+            case 4:
+                AdminMenu adminMenu = AdminMenu.getInstance();
+                adminMenu.showMenu();
+                break;
+            case 5:
+                System.exit(0);
         }
-        if (choiceNumeric == 2) {
-            System.out.println("See my reservations");
-        }
-        if (choiceNumeric == 3) {
-            System.out.println("Create an account");
-        }
-        if (choiceNumeric == 4) {
-            System.out.println("Admin");
-        }
-        if (choiceNumeric == 5) {
-            System.exit(0);
-        }
+
     }
 
 
