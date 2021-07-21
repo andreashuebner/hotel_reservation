@@ -117,6 +117,10 @@ public class ReservationService {
         return null;
     }
 
+    public Collection<IRoom> getAllRooms() {
+        return rooms;
+    }
+
 }
 
 
