@@ -5,6 +5,7 @@ import model.IRoom;
 import model.Reservation;
 import model.Room;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Vector;
@@ -69,14 +70,29 @@ public class ReservationService {
         // with reservation data not conflicting with provided
         // check in and check out dates
         Vector<IRoom> rooms = new Vector<>();
+        Vector<IRoom> roomsConflicting = new Vector<>();
         for (Reservation reservation: reservations) {
+            // System.out.println("Reservation in reservations");
+            // System.out.println(reservation);
             IRoom room = reservation.getiRoom();
             // Check if room is free for provided dates
-            if (!isWithinRange(checkOutDate, reservation.getCheckInDate(),
+            if (isWithinRange(checkOutDate, reservation.getCheckInDate(),
                     reservation.getCheckOutDate())) {
+                roomsConflicting.add(room);
+            }
+            }
+
+        for (Reservation reservation: reservations) {
+            // System.out.println("Reservation in reservations");
+            // System.out.println(reservation);
+            IRoom room = reservation.getiRoom();
+            // Check if room is free for provided dates
+            if (!roomsConflicting.contains(room) && !rooms.contains(room)) {
                 rooms.add(room);
             }
-            }
+        }
+
+
         return rooms;
         }
 
@@ -106,6 +122,28 @@ public class ReservationService {
             }
         }
         rooms.add(roomToAdd);
+        // Create a dummy reservation in the past so that room will be searched
+        ReservationService reservationService = ReservationService.getInstance();
+        CustomerService customerService = CustomerService.getInstance();
+        Customer customer = customerService.getCustomer("dummy@dummy.com");
+        Date checkInDateDummy = null;
+        Date checkOutDateDummy = null;
+        try {
+        checkInDateDummy = new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1900");
+        } catch(Exception ex) {
+            System.out.println(ex.getLocalizedMessage());
+        }
+        try {
+            checkOutDateDummy = new SimpleDateFormat("dd/MM/yyyy").parse("01/02/1900");
+        } catch(Exception ex) {
+            System.out.println(ex.getLocalizedMessage());
+        }
+        try {
+            reservationService.reserveARoom(customer, roomToAdd, checkInDateDummy, checkOutDateDummy);
+        } catch(Exception ex) {
+            System.out.println(ex.getLocalizedMessage());
+        }
+
     }
 
     public IRoom getARoom(String roomId) {

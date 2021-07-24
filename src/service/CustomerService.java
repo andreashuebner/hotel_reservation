@@ -17,6 +17,10 @@ public class CustomerService {
         allCustomers.add(customer);
     }
 
+    public void addCustomer(Customer customer) {
+        allCustomers.add(customer);
+    }
+
     public Customer getCustomer(String customerEmail) {
         for (Customer customer: allCustomers) {
             if (customer.getEmail().equals(customerEmail)) {
