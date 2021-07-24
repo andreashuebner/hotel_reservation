@@ -1,6 +1,7 @@
 package com.company;
 
 import model.IRoom;
+import model.Room;
 import model.RoomType;
 import service.CustomerService;
 import service.ReservationService;
@@ -28,7 +29,7 @@ public class AdminMenu {
         waitForInput();
     }
 
-    private IRoom getRoomInformation() throws InvalidRoomPriceException {
+    private IRoom getRoomInformation() throws InvalidRoomSetUpException {
         String roomNumber = "";
         Double price = 0.0;
         RoomType roomType = RoomType.SINGLE;
@@ -41,11 +42,21 @@ public class AdminMenu {
         try {
             price = Double.parseDouble(priceText);
         } catch(Exception ex) {
-            throw new InvalidRoomPriceException("Room price needs to be a number greater than 0");
+            throw new InvalidRoomSetUpException("Room price needs to be a number greater than 0");
         }
         if (price <= 0.0) {
-            throw new InvalidRoomPriceException("Room price needs to be a number greater than 0");
+            throw new InvalidRoomSetUpException("Room price needs to be a number greater than 0");
         }
+        System.out.println("Please enter the room type (single/double");
+        String roomTypeString = scanner.nextLine();
+        if (roomTypeString.equals("single") || roomTypeString.equals("double")) {
+            if (roomTypeString.equals("double")) {
+                roomType = RoomType.DOUBLE;
+            }
+        } else {
+            throw new InvalidRoomSetUpException("Room type needs to be either single our double.");
+        }
+        return new Room(roomNumber, price, roomType, isFree);
     }
     private void waitForInput() {
         Scanner scanner = new Scanner(System.in);
@@ -75,7 +86,15 @@ public class AdminMenu {
                 reservationService.printAllReservations();
                 showMenu();
             case 4:
-
+                try {
+                    IRoom room = getRoomInformation();
+                    reservationService.addRoom(room);
+                    System.out.println("Room " + room + " added.");
+                    showMenu();
+                } catch(Exception ex) {
+                    System.out.println(ex.getLocalizedMessage());
+                    showMenu();
+                }
                 break;
             case 5:
                MainMenu mainMenu = MainMenu.getInstance();
