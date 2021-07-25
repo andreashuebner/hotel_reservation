@@ -7,11 +7,12 @@ import model.Room;
 import service.CustomerService;
 import service.ReservationService;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Scanner;
-import java.util.Vector;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 
 public class MainMenu {
     private static MainMenu mainMenu = null;
@@ -56,6 +57,55 @@ public class MainMenu {
         Customer customer = new Customer(firstName, lastName, email);
         return customer;
     }
+
+    private void performBooking(Collection<IRoom> rooms, Date checkInDate,
+                                Date checkOutDate) {
+        // System.out.println("Check in date at perform booking");
+        // System.out.println((String)checkInDate);
+        // System.out.println("Check out date at perform booking");
+        // System.out.println((String)checkOutDate);
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please enter the number of the choice you want to make");
+        String choiceStringRoom = scanner.nextLine();
+        int choiceRoom = 0;
+        try {
+            choiceRoom = Integer.parseInt(choiceStringRoom);
+        } catch(Exception ex) {
+            System.out.println("Invalid choice");
+            return;
+
+        }
+        if (choiceRoom < 1 || choiceRoom > rooms.size()) {
+            System.out.println("Invalid choice");
+            return;
+
+        }
+        IRoom roomChosen = (IRoom) rooms.toArray()[0];
+        Reservation reservation = null;
+        String customerEmail = null;
+        System.out.println("Please enter your email address for your customer account");
+        customerEmail = scanner.nextLine();
+        Customer customer = customerService.getCustomer(customerEmail);
+        try {
+            reservation = reservationService.reserveARoom(customer, roomChosen,
+                    checkInDate, checkOutDate);
+        } catch(Exception ex) {
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Sorry, the room was booked in between");
+            return;
+
+        }
+        if (reservation == null) {
+            System.out.println("A technical error occured. Please try again");
+            return;
+
+        } else {
+            System.out.println("Reservation successful. Thank you.");
+            System.out.println(reservation);
+            return;
+
+        }
+    }
     private void waitForInput() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Please enter you choice as a number from 1 - 5");
@@ -80,14 +130,14 @@ public class MainMenu {
                 Date checkInDate;
                 Date checkOutDate;
                 try {
-                    checkInDate = new SimpleDateFormat("dd/MM/yyyy").parse(checkInDateString);
+                    checkInDate = new SimpleDateFormat("MM/dd/yyyy").parse(checkInDateString);
                 } catch(Exception ex) {
                     System.out.println("Check in Date must be in format mm/dd/yyyy");
                     showMenu();
                     break;
                 }
                 try {
-                    checkOutDate = new SimpleDateFormat("dd/MM/yyyy").parse(checkOutDateString);
+                    checkOutDate = new SimpleDateFormat("MM/dd/yyyy").parse(checkOutDateString);
                 } catch(Exception ex) {
                     System.out.println("Check out Date must be in format mm/dd/yyyy");
                     showMenu();
@@ -99,9 +149,49 @@ public class MainMenu {
                 // System.out.println(numberRoomsAvailable);
                 if (numberRoomsAvailable == 0) {
                     System.out.println("Unfortunately no rooms available for desired dates.");
-                    System.out.println("Please try different check in and check out dates");
-                    showMenu();
-                    break;
+                    System.out.println("We are searching for rooms for you at a later check in date (one week later)");
+                    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+                    Calendar c = Calendar.getInstance();
+                    try {
+                        c.setTime(sdf.parse(checkInDateString));
+                    } catch(ParseException ex) {
+                        System.out.println(ex.getLocalizedMessage());
+                    }
+                    c.add(Calendar.DAY_OF_MONTH, 7);
+                    Date alternativeCheckInDate = c.getTime();
+                    try {
+                        c.setTime(sdf.parse(checkOutDateString));
+                    } catch(ParseException ex) {
+                        System.out.println(ex.getLocalizedMessage());
+                    }
+                        c.add(Calendar.DAY_OF_MONTH, 7);
+                        Date alternativeCheckOutDate = c.getTime();
+
+                    // Date alternativeCheckInDate =
+                    rooms = reservationService.findRooms(alternativeCheckInDate, alternativeCheckOutDate);
+                    numberRoomsAvailable = rooms.size();
+                    if (numberRoomsAvailable == 0) {
+                        System.out.println("Unfortunately, we cannot find rooms at the alternative date.");
+                        System.out.println("Please try alternative dates.");
+                    } else {
+                        System.out.println("The following rooms are available at alternative dates:");
+                        int counter = 0;
+                        for (IRoom room: rooms) {
+                            System.out.println("Choice: " + (counter + 1) + " " + room);
+                            counter += 1;
+                        }
+                        System.out.println("Do you want to continue with booking for the alternative date (y/n)?");
+                        String answer = scanner.nextLine();
+                        if (answer.equals("y")) {
+                            performBooking(rooms, alternativeCheckInDate, alternativeCheckOutDate);
+                        } else {
+                            showMenu();
+                            break;
+                        }
+                    }
+
+
+
                 } else {
                     System.out.println("The following rooms are available:");
                     int counter = 0;
@@ -109,54 +199,13 @@ public class MainMenu {
                         System.out.println("Choice: " + (counter + 1) + " " + room);
                         counter += 1;
                     }
-                    String customerEmail = null;
-                    System.out.println("Please enter your email address for your customer account");
-                    customerEmail = scanner.nextLine();
-                    Customer customer = customerService.getCustomer(customerEmail);
-                    if (customer == null) {
-                        System.out.println("Unfortunately, this email address was not found. Please create an account first");
-                        showMenu();
-                        break;
-                    }
-                    System.out.println("Please enter the number of the choice you want to make");
-                    String choiceStringRoom = scanner.nextLine();
-                    int choiceRoom = 0;
-                    try {
-                        choiceRoom = Integer.parseInt(choiceStringRoom);
-                    } catch(Exception ex) {
-                        System.out.println("Invalid choice");
-                        showMenu();
-                        break;
-                    }
-                    if (choiceRoom < 1 || choiceRoom > rooms.size()) {
-                        System.out.println("Invalid choice");
-                        showMenu();
-                        break;
-                    }
-                    IRoom roomChosen = (IRoom) rooms.toArray()[0];
-                    Reservation reservation = null;
-                    try {
-                        reservation = reservationService.reserveARoom(customer, roomChosen,
-                                checkInDate, checkOutDate);
-                    } catch(Exception ex) {
-                        System.out.println("Sorry, the room was booked in between");
-                        showMenu();
-                        break;
-                    }
-                    if (reservation == null) {
-                        System.out.println("A technical error occured. Please try again");
-                        showMenu();
-                        break;
-                    } else {
-                        System.out.println("Reservation successful. Thank you.");
-                        System.out.println(reservation);
-                        showMenu();
-                        break;
-                    }
+                    performBooking(rooms, checkInDate, checkOutDate);
+
 
                 }
 
-
+                showMenu();
+                break;
             case 2:
                 System.out.println("Please enter your account email");
                 String email = scanner.nextLine();

@@ -2,11 +2,11 @@ package model;
 
 import java.util.Locale;
 
-public class Customer {
+public final class Customer {
     private String firstName;
     private String lastName;
     private String email;
-private static boolean isValidEmail(String email) {
+private final static boolean isValidEmail(String email) {
     String emailtoMatch = email.toLowerCase();
     if (emailtoMatch.matches("\\S+@\\S+\\.com")) {
         return true;
@@ -23,20 +23,40 @@ private static boolean isValidEmail(String email) {
         this.email = email;
     }
 
-    public String getFirstName() {
+    @Override
+    public boolean equals(Object obj) {
+    if (this == obj) {
+        return true;
+    }
+    if (obj == null || obj.getClass() != this.getClass()) {
+        return false;
+    }
+    Customer customer = (Customer) obj;
+
+    return (customer.firstName.equals(this.firstName) && customer.lastName.equals(this.lastName) &&
+            customer.email.equals(this.email));
+    }
+
+    @Override
+    public int hashCode() {
+    // We are just using the combination of first Name, last name and email has the hash code
+        return (int) firstName.hashCode() * lastName.hashCode() * email.hashCode();
+    }
+
+    public final String getFirstName() {
         return firstName;
     }
 
-    public String getLastName() {
+    public final String getLastName() {
         return lastName;
     }
 
-    public String getEmail() {
+    public final String getEmail() {
         return email;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
     return "First Name: " + firstName + " Last Name: " + lastName +
             "Email: " + email;
     }
